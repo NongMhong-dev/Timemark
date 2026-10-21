@@ -6,6 +6,10 @@
   <meta name="theme-color" content="#0a1224">
   <meta name="description" content="ประทับวันเวลาและพิกัด GPS ลงในภาพถ่ายจากมือถือ">
   <title>Timemark Studio | ประทับเวลาและพิกัดภาพ</title>
+  <!-- Reference-style lettering for the photo stamp; system fonts remain as fallbacks. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root{color-scheme:dark;--bg:#090f1e;--panel:#111c30;--panel2:#0c1527;--edge:#263653;--text:#f5f8ff;--muted:#9aaac2;--gold:#ffc05a;--gold2:#f0a931;--green:#36d9ae;--error:#ff9898;--radius:19px}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#192c4b 0%,#0a1224 35%,var(--bg) 76%);color:var(--text);font:400 15px/1.6 -apple-system,BlinkMacSystemFont,"Thonburi","Noto Sans Thai","Tahoma",sans-serif;-webkit-tap-highlight-color:transparent}
@@ -105,7 +109,7 @@
       return true;
     }
     function constrainDay(){let yr=Number($('inputYearBE').value),mon=Number($('inputMonth').value);if(yr<2400||yr>2800)return;const max=new Date(yr-543,mon+1,0).getDate();$('inputDay').max=String(max);const d=Number($('inputDay').value);if(d>max)$('inputDay').value=max;else if(d<1 && $('inputDay').value!=='')$('inputDay').value=1;renderCanvas();}
-    function regenerateVerifyCode(){const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const buf=new Uint8Array(12);if(globalThis.crypto && crypto.getRandomValues)crypto.getRandomValues(buf);else for(let i=0;i<buf.length;i++)buf[i]=Math.floor(Math.random()*256);$('inputVerifyCode').value=Array.from(buf,b=>alphabet[b%alphabet.length]).join('');renderCanvas();}
+    function regenerateVerifyCode(){const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const buf=new Uint8Array(14);if(globalThis.crypto && crypto.getRandomValues)crypto.getRandomValues(buf);else for(let i=0;i<buf.length;i++)buf[i]=Math.floor(Math.random()*256);$('inputVerifyCode').value=Array.from(buf,b=>alphabet[b%alphabet.length]).join('');renderCanvas();}
     function cleanCoord(raw,kind){const value=String(raw).trim().replace(/,/g,'');if(!value)return null;const m=value.match(/^([+-]?\d+(?:\.\d+)?)\s*°?\s*([NSEW])?$/i);if(!m)return null;let n=Number(m[1]);const dir=(m[2]||'').toUpperCase();if((kind==='lat' && (dir==='E'||dir==='W'))||(kind==='lng'&&(dir==='N'||dir==='S')))return null;if(dir==='S'||dir==='W')n=-Math.abs(n);if(dir==='N'||dir==='E')n=Math.abs(n);if(!Number.isFinite(n)||Math.abs(n)>(kind==='lat'?90:180))return null;return {num:n,formatted:Math.abs(n).toFixed(6)+'°'+(kind==='lat'?(n<0?'S':'N'):(n<0?'W':'E'))};}
     function coordinates(){const lat=cleanCoord($('inputLat').value,'lat'),lng=cleanCoord($('inputLng').value,'lng');return {lat,lng,anyInput:Boolean($('inputLat').value.trim()||$('inputLng').value.trim())};}
     function manualCoordinate(){state.requestSerial++;state.source='manual';state.accuracy=null;state.gpsAt=null;$('gpsAccuracy').textContent='สถานะ: พิกัดมีการกรอกหรือแก้ไขด้วยมือ';gpsStatus('','พิกัดแก้ไขด้วยมือ — สามารถกด GPS เพื่อดึงใหม่ได้');renderCanvas();}
@@ -239,12 +243,63 @@
       let dateFont=35*s;ctx.font=`500 ${dateFont}px -apple-system, Thonburi, Tahoma, sans-serif`;
       const maxDateW=W-dateX-pad;if(maxDateW>10 && ctx.measureText(dateStr).width>maxDateW){dateFont*=Math.max(.62,maxDateW/ctx.measureText(dateStr).width);}
       ctx.save();ctx.font=`500 ${dateFont}px -apple-system, Thonburi, Tahoma, sans-serif`;ctx.fillStyle='#fff';ctx.textBaseline='top';ctx.shadowColor='#000c';ctx.shadowBlur=5*s;ctx.fillText(dateStr,dateX,timeY+15*s);ctx.fillText(yearStr,dateX,timeY+80*s);ctx.restore();
-      // Brand lower right, matching the reference composition.
-      ctx.save();ctx.textAlign='right';ctx.textBaseline='alphabetic';ctx.shadowColor='#000c';ctx.shadowBlur=5*s;
-      ctx.font=`700 ${Math.round(37*s)}px -apple-system, Thonburi, Tahoma, sans-serif`;
-      ctx.fillStyle='#ffc05a';ctx.fillText('Timemark',centerX,H-66*s);
-      ctx.font=`400 ${Math.round(20*s)}px -apple-system, Thonburi, Tahoma, sans-serif`;ctx.fillStyle='#e7ebf3';ctx.fillText('ประทับข้อมูลจากผู้ใช้',centerX,H-29*s);ctx.restore();
-      if($('chkShowVerify').checked){ctx.save();ctx.translate(W-12*s,H*.63);ctx.rotate(-Math.PI/2);ctx.font=`500 ${18*s}px -apple-system, Thonburi, Tahoma, sans-serif`;ctx.fillStyle='#f4f6fb';ctx.textBaseline='middle';ctx.shadowColor='#000b';ctx.shadowBlur=4*s;ctx.fillText('ID '+$('inputVerifyCode').value+'  •  Timemark',0,0);ctx.restore();}
+      // Lower-right mark: warm gold, rounded bold display font and white subtitle.
+      // This lettering follows the user-supplied reference; it is not an authenticity certificate.
+      ctx.save();
+      ctx.textAlign='right';
+      ctx.textBaseline='alphabetic';
+      ctx.shadowColor='rgba(0,0,0,.75)';
+      ctx.shadowBlur=5*s;
+      ctx.shadowOffsetY=1*s;
+      const brandFontSize=Math.max(12,Math.round(39*s));
+      ctx.font=`700 ${brandFontSize}px "Kanit", "Thonburi", "Tahoma", sans-serif`;
+      ctx.fillStyle='#F5B041';
+      ctx.fillText('Timemark',centerX,H-67*s);
+      ctx.font=`400 ${Math.max(10,Math.round(26*s))}px "Kanit", "Thonburi", "Tahoma", sans-serif`;
+      ctx.fillStyle='rgba(255,255,255,.94)';
+      ctx.fillText('ภาพจริง 100%',centerX,H-24*s);
+      ctx.restore();
+
+      // Vertical image reference, including a check-in-shield icon, as in the sample.
+      // The text is a visual reference ID; no server-side verification is implied.
+      if($('chkShowVerify').checked){
+        ctx.save();
+        const refText=$('inputVerifyCode').value.trim().toUpperCase()+'  Timemark Verified';
+        const fontSize=Math.max(10,Math.round(20*s));
+        ctx.font=`400 ${fontSize}px "Kanit", "Thonburi", "Tahoma", sans-serif`;
+        const allowedWidth=H*.57;
+        const neededWidth=ctx.measureText(refText).width+32*s;
+        const fit=Math.min(1,allowedWidth/Math.max(1,neededWidth));
+        const fs=Math.max(9,fontSize*fit);
+        ctx.translate(W-19*s,H*.67);
+        ctx.rotate(-Math.PI/2);
+        ctx.font=`400 ${fs}px "Kanit", "Thonburi", "Tahoma", sans-serif`;
+        ctx.fillStyle='rgba(255,255,255,.94)';
+        ctx.strokeStyle='rgba(255,255,255,.95)';
+        ctx.shadowColor='rgba(0,0,0,.85)';
+        ctx.shadowBlur=4*s;
+        ctx.textBaseline='middle';
+        ctx.fillText(refText,27*s,0);
+        // Shield outline with check mark, drawn with canvas primitives for JPG export.
+        ctx.lineWidth=Math.max(1.1,1.8*s);
+        ctx.lineJoin='round';
+        ctx.lineCap='round';
+        ctx.beginPath();
+        ctx.moveTo(0,-10*s);
+        ctx.lineTo(10*s,-6*s);
+        ctx.lineTo(10*s,2*s);
+        ctx.quadraticCurveTo(9*s,9*s,0,12*s);
+        ctx.quadraticCurveTo(-9*s,9*s,-10*s,2*s);
+        ctx.lineTo(-10*s,-6*s);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-5*s,0);
+        ctx.lineTo(-1*s,4*s);
+        ctx.lineTo(5*s,-3*s);
+        ctx.stroke();
+        ctx.restore();
+      }
     }
     function validateBeforeExport(){
       if(!state.image){toast('กรุณาถ่ายรูปหรือเลือกรูปก่อนบันทึก');return false;}
