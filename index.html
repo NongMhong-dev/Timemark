@@ -257,15 +257,22 @@
       // Lower-right mark: warm gold, rounded bold display font and white subtitle.
       // This lettering follows the user-supplied reference; it is not an authenticity certificate.
       ctx.save();
-      ctx.textAlign='right';
+      ctx.textAlign='left';
       ctx.textBaseline='alphabetic';
       ctx.shadowColor='rgba(0,0,0,.75)';
       ctx.shadowBlur=5*s;
       ctx.shadowOffsetY=1*s;
       const brandFontSize=Math.max(12,Math.round(39*s));
       ctx.font=`700 ${brandFontSize}px "Kanit", "Thonburi", "Tahoma", sans-serif`;
+      const timeLabel='Time', markLabel='mark';
+      const brandTimeWidth=ctx.measureText(timeLabel).width;
+      const brandMarkWidth=ctx.measureText(markLabel).width;
+      const brandStartX=centerX-brandTimeWidth-brandMarkWidth;
       ctx.fillStyle='#F5B041';
-      ctx.fillText('Timemark',centerX,H-67*s);
+      ctx.fillText(timeLabel,brandStartX,H-67*s);
+      ctx.fillStyle='#FFFFFF';
+      ctx.fillText(markLabel,brandStartX+brandTimeWidth,H-67*s);
+      ctx.textAlign='right';
       ctx.font=`400 ${Math.max(10,Math.round(26*s))}px "Kanit", "Thonburi", "Tahoma", sans-serif`;
       ctx.fillStyle='rgba(255,255,255,.94)';
       ctx.fillText('ภาพจริง 100%',centerX,H-24*s);
