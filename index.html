@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a1224">
+  <meta name="description" content="ประทับวันเวลาและพิกัด GPS ลงในภาพถ่ายจากมือถือ">
+  <title>Timemark Studio | ประทับเวลาและพิกัดภาพ</title>
+  <style>
+    :root{color-scheme:dark;--bg:#090f1e;--panel:#111c30;--panel2:#0c1527;--edge:#263653;--text:#f5f8ff;--muted:#9aaac2;--gold:#ffc05a;--gold2:#f0a931;--green:#36d9ae;--error:#ff9898;--radius:19px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#192c4b 0%,#0a1224 35%,var(--bg) 76%);color:var(--text);font:400 15px/1.6 -apple-system,BlinkMacSystemFont,"Thonburi","Noto Sans Thai","Tahoma",sans-serif;-webkit-tap-highlight-color:transparent}
+    button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.65}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,.upload-btn:focus-within{outline:2px solid var(--gold);outline-offset:3px}
+    .topbar{position:sticky;top:0;z-index:12;background:rgba(9,16,31,.94);border-bottom:1px solid #202e48;backdrop-filter:blur(17px);-webkit-backdrop-filter:blur(17px)}.top-inner{max-width:1140px;margin:auto;min-height:75px;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:11px;min-width:0}.brand-mark{width:43px;height:43px;flex:none;display:grid;place-items:center;border-radius:13px;background:#3f301d;border:1px solid #986a2c;color:var(--gold)}.brand-title{font-size:23px;line-height:1.12;font-weight:800;letter-spacing:-.7px}.brand-title b{color:var(--gold)}.brand-title small{color:var(--muted);font-size:12px;font-weight:500;letter-spacing:0;margin-left:4px}.brand-subtitle{color:var(--muted);font-size:11px;line-height:1.4;margin-top:3px}
+    .icon{display:inline-block;width:19px;height:19px;vertical-align:-4px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.icon-lg{width:22px;height:22px}.btn{border:1px solid transparent;border-radius:13px;display:inline-flex;justify-content:center;align-items:center;gap:8px;min-height:44px;padding:10px 15px;font-weight:700;font-size:14px;line-height:1.25;transition:transform .15s,background .15s,border-color .15s;text-decoration:none;white-space:nowrap}.btn:active{transform:scale(.97)}.btn-gold{background:linear-gradient(135deg,#ffca70,#f5aa35);color:#211a0d;box-shadow:0 3px 15px #f9b34222}.btn-green{background:#079d79;color:#fff}.btn-green:hover{background:#0ab68b}.btn-secondary{background:#1c2b44;border-color:#334765;color:#f4f7fc}.btn-secondary:hover{background:#263958}.btn-ghost{background:#18253a;border-color:#34415a;color:var(--gold)}.btn-sm{padding:8px 11px;min-height:36px;font-size:12px}.btn-wide{width:100%}
+    .container{max-width:1140px;margin:auto;padding:21px 18px 54px}.intro{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px;margin-bottom:17px}.intro h1{font-size:22px;margin:0;letter-spacing:-.4px;font-weight:750}.intro p{margin:2px 0 0;color:var(--muted);font-size:13px}.privacy-note{color:#acc2d8;font-size:11px;display:flex;align-items:center;gap:5px}
+    .layout{display:grid;grid-template-columns:minmax(0,1.06fr) minmax(0,.94fr);align-items:start;gap:18px}.right-stack{display:grid;gap:18px;min-width:0}.panel{background:linear-gradient(160deg,#131e33,#0e172a);border:1px solid #263550;border-radius:var(--radius);padding:18px;box-shadow:0 12px 30px rgba(0,0,0,.12);min-width:0}.panel-header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}.panel-title{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:750;line-height:1.4}.panel-title .gold{color:var(--gold)}.panel-title .green{color:var(--green)}.small-label{font-size:11px;color:var(--muted);background:#18263d;border:1px solid #293854;padding:5px 8px;border-radius:8px;white-space:nowrap}
+    .preview-shell{overflow:hidden;border:1px solid #34435a;border-radius:15px;background:#080c16;position:relative;display:grid;place-items:center;min-height:340px}.empty-preview{width:100%;aspect-ratio:4/5;max-height:560px;background:radial-gradient(circle at 66% 18%,#344667 0%,transparent 36%),linear-gradient(150deg,#17253b,#0a1223 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:9px;padding:26px;color:#c3d2e5}.empty-ring{width:80px;height:80px;border:1px solid #526986;border-radius:24px;background:#2539516a;display:grid;place-items:center;color:var(--gold);margin-bottom:8px;box-shadow:0 0 0 12px #1c2e4550}.empty-preview strong{font-size:19px;color:#fff}.empty-preview p{font-size:12px;color:#a0b2cc;max-width:260px;margin:0}
+    #stampCanvas{display:block;width:100%;height:auto;max-height:min(70vh,710px);object-fit:contain}#stampCanvas[hidden],.empty-preview[hidden]{display:none}.preview-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}.upload-btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:49px;border-radius:13px;font-weight:700;font-size:13px;cursor:pointer;border:1px solid #3c5071;padding:8px 10px;background:#1f304b;color:#f3f8ff;text-align:center}.upload-btn.primary{background:#1b67ca;border-color:#2b79db}.upload-btn input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none}.action-bottom{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.preview-foot{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:11px;margin-top:12px;flex-wrap:wrap}
+    .rule{height:1px;background:#26344c;margin:16px 0}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field{min-width:0}.field.full{grid-column:1/-1}.field label{display:block;color:#adbcd1;font-size:12px;font-weight:600;margin-bottom:5px}.field input,.field textarea,.field select{width:100%;height:46px;border-radius:11px;border:1px solid #384a67;background:#080f20;color:#f7f9ff;padding:10px 12px;min-width:0;outline:none;appearance:none;-webkit-appearance:none;font-size:15px}.field textarea{height:auto;min-height:80px;resize:vertical;line-height:1.55}.field select{padding-right:28px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23aec1d9' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-position:right 10px center;background-repeat:no-repeat}.field input:focus,.field select:focus,.field textarea:focus{border-color:#ffbd53;box-shadow:0 0 0 3px #f4b8441d}.hint{margin-top:8px;color:var(--muted);font-size:11px;line-height:1.7}.section-action{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-top:2px}.section-action h2{margin:0;font-size:17px}.range-label{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}.range-label output{color:var(--gold);font-weight:800;font-size:14px}input[type=range]{width:100%;accent-color:#ffc05a;margin:11px 0 3px}.checkline{display:flex;gap:9px;align-items:center;color:#c9d5e3;font-size:12px;cursor:pointer}.checkline input{width:18px;height:18px;accent-color:#feb647;flex:none}.code-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;margin-top:10px}.code-row input{width:100%;background:#080f20;border:1px solid #384a67;border-radius:10px;padding:9px 11px;color:#b7c8df;font:12px/1.4 ui-monospace,monospace;min-width:0}
+    .status{border:1px solid #31405d;background:#0a1324;padding:12px;border-radius:12px;display:flex;align-items:flex-start;gap:9px;font-size:12px;color:#bed0e3;line-height:1.7;margin-bottom:14px}.status .dot{width:9px;height:9px;background:#ffc05a;flex:none;border-radius:50%;margin-top:6px;box-shadow:0 0 0 3px #ffbd4a22}.status.good{border-color:#226b60;background:#092720}.status.good .dot{background:#36d9ae;box-shadow:0 0 0 3px #39dca922}.status.bad{border-color:#874953;background:#311a28;color:#ffd6d6}.status.bad .dot{background:#ff9898}.gps-action{width:100%;margin-top:12px;margin-bottom:11px}.source-line{font-size:11px;color:#8fa5c0;margin-top:7px}.muted{color:var(--muted)}.warning{margin-top:14px;border-left:3px solid #b58a39;background:#2b281d8c;padding:10px 11px;border-radius:0 9px 9px 0;font-size:11px;line-height:1.7;color:#dbc7a2}
+    .toast{position:fixed;z-index:40;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#213651;border:1px solid #3b5573;color:#fff;border-radius:13px;box-shadow:0 8px 30px #0008;padding:11px 16px;max-width:calc(100vw - 30px);width:max-content;max-width:min(420px,calc(100vw - 30px));font-size:12px;line-height:1.5;text-align:center}.toast[hidden]{display:none}
+    .modal{position:fixed;inset:0;z-index:25;background:#03070de8;display:flex;align-items:center;justify-content:center;padding:14px;padding-bottom:calc(14px + env(safe-area-inset-bottom))}.modal[hidden]{display:none}.modal-card{width:min(100%,570px);max-height:94vh;display:flex;flex-direction:column;gap:10px;background:#111e31;border:1px solid #42536c;border-radius:17px;padding:14px}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:700}.modal-img{object-fit:contain;max-height:65vh;max-width:100%;border-radius:9px;background:#000;margin:auto}.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.modal-tip{font-size:11px;color:#a8bdd1;margin:0;text-align:center}
+    @media(max-width:800px){.layout{grid-template-columns:1fr}.container{max-width:640px;padding:15px 13px 60px}.panel{padding:15px}.preview-shell{min-height:290px}.empty-preview{max-height:470px}}
+    @media(max-width:400px){.top-inner{padding:10px 12px}.brand-title{font-size:20px}.brand-subtitle{font-size:10px}.brand-mark{width:39px;height:39px}.top-save{padding:9px 11px;font-size:12px}.panel-title{font-size:15px}.panel{padding:12px}.field input,.field select{font-size:14px}.intro h1{font-size:19px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <svg aria-hidden="true" style="display:none" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 7h4l2-3h4l2 3h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z"/><circle cx="12" cy="14" r="3.5"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.7"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6.5V12l4 2.5"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V3m0 0L7 8m5-5 5 5M4 16v4h16v-4"/></symbol>
+    <symbol id="i-photo" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><circle cx="8" cy="9" r="2"/><path d="m3 18 6-6 4 4 3-3 5 5"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 6v5h-5M4 18v-5h5"/><path d="M5 10a7.5 7.5 0 0 1 13-3l2 4M4 13l2 4a7.5 7.5 0 0 0 13-3"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 16V3m0 0L7 8m5-5 5 5M4 13v7h16v-7"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m5 5 14 14M19 5 5 19"/></symbol>
+  </svg>
+  <header class="topbar"><div class="top-inner">
+    <div class="brand"><div class="brand-mark"><svg class="icon icon-lg"><use href="#i-camera"/></svg></div><div><div class="brand-title"><b>Time</b>mark <small>Studio</small></div><div class="brand-subtitle">ประทับเวลา วันที่ และพิกัดบนภาพถ่าย</div></div></div>
+    <button type="button" class="btn btn-gold top-save" id="topSave"><svg class="icon"><use href="#i-upload"/></svg> บันทึกภาพ</button>
+  </div></header>
+  <main class="container">
+    <div class="intro"><div><h1>สร้างภาพประทับเวลา</h1><p>ถ่ายรูปหรือเลือกภาพ แล้วปรับข้อมูลได้ทันที</p></div><div class="privacy-note">◈ ประมวลผลภาพในเครื่องของคุณ</div></div>
+    <div class="layout">
+      <section class="panel" aria-labelledby="previewTitle"><div class="panel-header"><div class="panel-title" id="previewTitle"><svg class="icon gold"><use href="#i-photo"/></svg> ตัวอย่างภาพ</div><span class="small-label" id="resolutionBadge">ยังไม่เลือกรูป</span></div>
+        <div class="preview-shell" id="previewShell"><div class="empty-preview" id="emptyPreview"><div class="empty-ring"><svg class="icon" style="width:37px;height:37px"><use href="#i-camera"/></svg></div><strong>เพิ่มรูปภาพเพื่อเริ่มต้น</strong><p>เมื่อเลือกรูป ระบบจะแสดงลายน้ำเวลา สถานที่ และพิกัดลงบนภาพจริงแบบทันที</p></div><canvas id="stampCanvas" role="img" aria-label="ภาพตัวอย่างพร้อมวันเวลาและพิกัด" hidden></canvas></div>
+        <div class="preview-actions">
+          <label class="upload-btn primary"><svg class="icon"><use href="#i-camera"/></svg> ถ่ายภาพ<input id="cameraInput" type="file" accept="image/*" capture="environment"></label>
+          <label class="upload-btn"><svg class="icon"><use href="#i-photo"/></svg> เลือกจากอัลบั้ม<input id="galleryInput" type="file" accept="image/*"></label>
+        </div>
+        <div class="action-bottom"><button type="button" id="saveBtn" class="btn btn-gold"><svg class="icon"><use href="#i-upload"/></svg> บันทึก JPG</button><button type="button" id="shareBtn" class="btn btn-secondary"><svg class="icon"><use href="#i-share"/></svg> แชร์รูปภาพ</button></div>
+        <div class="preview-foot"><span>รองรับภาพแนวตั้งและแนวนอน</span><span id="imageInfo">ไฟล์ JPG / PNG / HEIC ที่เบราว์เซอร์รองรับ</span></div>
+      </section>
+      <div class="right-stack">
+        <section class="panel" aria-labelledby="timeTitle"><div class="panel-header"><div class="panel-title" id="timeTitle"><svg class="icon gold"><use href="#i-clock"/></svg> 1. วันและเวลา</div><button type="button" class="btn btn-ghost btn-sm" id="nowBtn"><svg class="icon" style="width:15px;height:15px"><use href="#i-refresh"/></svg> เวลาปัจจุบัน</button></div>
+          <div class="form-grid">
+            <div class="field"><label for="inputTime">เวลา (ชั่วโมง:นาที)</label><input id="inputTime" type="time" step="60" required></div>
+            <div class="field"><label for="inputDay">วันที่</label><input id="inputDay" type="number" inputmode="numeric" min="1" max="31" required></div>
+            <div class="field"><label for="inputMonth">เดือน</label><select id="inputMonth"><option value="0">ม.ค. (มกราคม)</option><option value="1">ก.พ. (กุมภาพันธ์)</option><option value="2">มี.ค. (มีนาคม)</option><option value="3">เม.ย. (เมษายน)</option><option value="4">พ.ค. (พฤษภาคม)</option><option value="5">มิ.ย. (มิถุนายน)</option><option value="6">ก.ค. (กรกฎาคม)</option><option value="7">ส.ค. (สิงหาคม)</option><option value="8">ก.ย. (กันยายน)</option><option value="9">ต.ค. (ตุลาคม)</option><option value="10">พ.ย. (พฤศจิกายน)</option><option value="11">ธ.ค. (ธันวาคม)</option></select></div>
+            <div class="field"><label for="inputYearBE">ปี พ.ศ.</label><input id="inputYearBE" type="number" inputmode="numeric" min="2400" max="2800" required></div>
+          </div>
+          <div class="rule"></div>
+          <div class="range-label"><label for="inputScale">ขนาดตัวอักษรบนภาพ</label><output id="scaleValText" for="inputScale">100%</output></div>
+          <input type="range" id="inputScale" min="65" max="145" value="100" step="5">
+          <div class="rule"></div>
+          <label class="checkline"><input type="checkbox" id="chkShowVerify" checked> แสดงรหัสภาพด้านขวา (รหัสอ้างอิง ไม่ใช่รหัสตรวจสอบ)</label>
+          <div class="code-row"><input id="inputVerifyCode" type="text" autocomplete="off" maxlength="24" aria-label="รหัสอ้างอิงภาพ"><button id="regenBtn" type="button" class="btn btn-secondary btn-sm">สุ่มรหัส</button></div>
+        </section>
+        <section class="panel" aria-labelledby="gpsTitle"><div class="panel-header"><div class="panel-title" id="gpsTitle"><svg class="icon green"><use href="#i-pin"/></svg> 2. ตำแหน่งและพิกัด GPS</div></div>
+          <div class="status" id="gpsStatus" role="status" aria-live="polite"><span class="dot"></span><span id="gpsBannerText">แตะปุ่มด้านล่างเพื่อขอพิกัดจากโทรศัพท์</span></div>
+          <div class="form-grid">
+            <div class="field full"><label for="inputPlace">ชื่อสถานที่ / หน่วยงาน</label><input id="inputPlace" type="text" value="สภ.บ้านแดง" maxlength="180" autocomplete="off"></div>
+            <div class="field full"><label for="inputAddress">ที่อยู่ปัจจุบัน (ระบบเติมให้หลังดึง GPS สำเร็จ)</label><textarea id="inputAddress" rows="2" placeholder="ยังไม่มีที่อยู่จาก GPS — สามารถพิมพ์เองได้"></textarea></div>
+            <div class="field"><label for="inputLat">ละติจูด (Latitude)</label><input id="inputLat" type="text" inputmode="decimal" placeholder="รอดึง GPS"></div>
+            <div class="field"><label for="inputLng">ลองจิจูด (Longitude)</label><input id="inputLng" type="text" inputmode="decimal" placeholder="รอดึง GPS"></div>
+          </div>
+          <button type="button" id="btnFetchGPS" class="btn btn-green gps-action"><svg class="icon"><use href="#i-pin"/></svg> ดึงพิกัด GPS ปัจจุบัน</button>
+          <div class="source-line" id="gpsAccuracy">สถานะ: ยังไม่ได้รับพิกัดจากมือถือ</div>
+          <div class="warning"><strong>การใช้ GPS:</strong> ให้เปิดเว็บด้วยลิงก์ <strong>HTTPS ผ่าน Safari หรือ Chrome</strong> และกดอนุญาตตำแหน่ง หากเปิดไฟล์ HTML ในหน้าพรีวิวของแอป GPS อาจใช้ไม่ได้ ชื่อที่อยู่ต้องเชื่อมต่ออินเทอร์เน็ตและอาจไม่ละเอียดถึงบ้านเลขที่</div>
+        </section>
+      </div>
+    </div>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+  <div class="modal" id="previewModal" role="dialog" aria-modal="true" aria-label="ภาพที่สร้างแล้ว" hidden><div class="modal-card"><div class="modal-head"><span>ภาพประทับเวลาเสร็จแล้ว</span><button class="btn btn-secondary btn-sm" id="closeModal" aria-label="ปิด"><svg class="icon"><use href="#i-close"/></svg></button></div><img class="modal-img" id="modalResultImage" alt="ภาพที่สร้างแล้ว"><p class="modal-tip">บน iPhone สามารถกดค้างที่รูปเพื่อบันทึก หรือแตะปุ่มแชร์เพื่อเลือก “บันทึกรูปภาพ”</p><div class="modal-actions"><button type="button" class="btn btn-secondary" id="modalShare">แชร์ภาพ</button><button type="button" class="btn btn-gold" id="modalDownload">ดาวน์โหลด</button></div></div></div>
+  <script>
+    'use strict';
+    const $ = id => document.getElementById(id);
+    const MONTHS = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    const canvas = $('stampCanvas'), ctx = canvas.getContext('2d');
+    const state = { image: null, objectURL: null, accuracy: null, source:'none', gpsAt:null, requestSerial:0, busy:false, imageBlobURL:null, toastTimer:null };
+
+    function toast(msg, ms=3700){ const el=$('toast'); el.textContent=msg; el.hidden=false; clearTimeout(state.toastTimer); state.toastTimer=setTimeout(()=>{el.hidden=true},ms); }
+    function gpsStatus(kind, msg){ $('gpsStatus').className='status'+(kind==='good'?' good':kind==='bad'?' bad':''); $('gpsBannerText').textContent=msg; }
+    function secureGeoAllowed(){ return location.protocol==='https:' || (location.protocol==='http:' && ['localhost','127.0.0.1','[::1]'].includes(location.hostname)); }
+    function setNowDateTime(){ const d=new Date(); $('inputTime').value=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');$('inputDay').value=d.getDate();$('inputMonth').value=d.getMonth();$('inputYearBE').value=d.getFullYear()+543; renderCanvas(); }
+    function checkDate(showError=false){
+      const year=Number($('inputYearBE').value),month=Number($('inputMonth').value),day=Number($('inputDay').value);
+      if(!Number.isInteger(year)||year<2400||year>2800 || month<0||month>11){if(showError) toast('กรุณากรอกปี พ.ศ. ให้ถูกต้อง');return false}
+      const days=new Date(year-543,month+1,0).getDate();
+      if(!Number.isInteger(day)||day<1||day>days){ if(showError) toast(`วันที่ต้องอยู่ระหว่าง 1–${days} สำหรับเดือนนี้`);return false }
+      if(!/^([01]\d|2[0-3]):[0-5]\d$/.test($('inputTime').value)){if(showError)toast('กรุณากรอกเวลา HH:MM ให้ถูกต้อง');return false}
+      return true;
+    }
+    function constrainDay(){let yr=Number($('inputYearBE').value),mon=Number($('inputMonth').value);if(yr<2400||yr>2800)return;const max=new Date(yr-543,mon+1,0).getDate();$('inputDay').max=String(max);const d=Number($('inputDay').value);if(d>max)$('inputDay').value=max;else if(d<1 && $('inputDay').value!=='')$('inputDay').value=1;renderCanvas();}
+    function regenerateVerifyCode(){const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';const buf=new Uint8Array(12);if(globalThis.crypto && crypto.getRandomValues)crypto.getRandomValues(buf);else for(let i=0;i<buf.length;i++)buf[i]=Math.floor(Math.random()*256);$('inputVerifyCode').value=Array.from(buf,b=>alphabet[b%alphabet.length]).join('');renderCanvas();}
+    function cleanCoord(raw,kind){const value=String(raw).trim().replace(/,/g,'');if(!value)return null;const m=value.match(/^([+-]?\d+(?:\.\d+)?)\s*°?\s*([NSEW])?$/i);if(!m)return null;let n=Number(m[1]);const dir=(m[2]||'').toUpperCase();if((kind==='lat' && (dir==='E'||dir==='W'))||(kind==='lng'&&(dir==='N'||dir==='S')))return null;if(dir==='S'||dir==='W')n=-Math.abs(n);if(dir==='N'||dir==='E')n=Math.abs(n);if(!Number.isFinite(n)||Math.abs(n)>(kind==='lat'?90:180))return null;return {num:n,formatted:Math.abs(n).toFixed(6)+'°'+(kind==='lat'?(n<0?'S':'N'):(n<0?'W':'E'))};}
+    function coordinates(){const lat=cleanCoord($('inputLat').value,'lat'),lng=cleanCoord($('inputLng').value,'lng');return {lat,lng,anyInput:Boolean($('inputLat').value.trim()||$('inputLng').value.trim())};}
+    function manualCoordinate(){state.requestSerial++;state.source='manual';state.accuracy=null;state.gpsAt=null;$('gpsAccuracy').textContent='สถานะ: พิกัดมีการกรอกหรือแก้ไขด้วยมือ';gpsStatus('','พิกัดแก้ไขด้วยมือ — สามารถกด GPS เพื่อดึงใหม่ได้');renderCanvas();}
+    function formatThaiAddressFromNominatim(data){
+      const a=data&&data.address;if(!a)return String(data?.display_name||'');
+      const output=[];
+      const push=(v,prefix='')=>{if(!v)return;const s=String(v).trim();if(!s)return;output.push(prefix && !s.startsWith(prefix)?prefix+s:s)};
+      push(a.house_number);push(a.road||a.village||a.hamlet);
+      push(a.suburb||a.quarter||a.tambon||a.neighbourhood,'ตำบล ');
+      push(a.city_district||a.district||a.county||a.municipality||a.town,'อำเภอ ');
+      push(a.province||a.state||a.city,'จังหวัด ');push(a.postcode);
+      return output.join(' ').replace(/\s+/g,' ').trim()||String(data?.display_name||'');
+    }
+    async function reverseGeocode(lat,lng,serial,before){
+      try{
+        const url='https://nominatim.openstreetmap.org/reverse?'+new URLSearchParams({format:'jsonv2',lat:String(lat),lon:String(lng),'accept-language':'th',zoom:'18',addressdetails:'1'});
+        const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),12000);let response;
+        try{response=await fetch(url,{headers:{'Accept':'application/json'},signal:controller.signal})}finally{clearTimeout(timer)}
+        if(!response.ok)throw Error('reverse-geocoding HTTP '+response.status);
+        const data=await response.json();if(serial!==state.requestSerial)return;
+        const address=formatThaiAddressFromNominatim(data);
+        if(address&&$('inputAddress').value===before){$('inputAddress').value=address;renderCanvas();gpsStatus('good','ดึงพิกัดสำเร็จ และพบข้อมูลที่อยู่ภาษาไทย');toast('GPS และที่อยู่พร้อมใช้งาน');}
+        else{gpsStatus('good','ดึงพิกัด GPS สำเร็จ (คุณแก้ไขที่อยู่ด้วยตนเองแล้ว)');}
+      }catch(err){if(serial!==state.requestSerial)return;gpsStatus('good','ได้พิกัด GPS แล้ว แต่แปลงเป็นที่อยู่ไม่ได้ คุณกรอกที่อยู่เองได้');toast('ได้พิกัด GPS แล้ว แต่บริการค้นหาที่อยู่ไม่พร้อม');}
+    }
+    function fetchCurrentGPS(){
+      if(!secureGeoAllowed()){gpsStatus('bad','GPS ต้องเปิดด้วยเว็บไซต์ HTTPS (หรือ localhost) ไม่ใช่หน้าเปิดไฟล์ index.html');toast('กรุณาอัปโหลดเว็บขึ้น HTTPS แล้วเปิดผ่าน Safari / Chrome',5000);return;}
+      if(!navigator.geolocation){gpsStatus('bad','เบราว์เซอร์นี้ไม่รองรับ Geolocation หรือถูกบล็อกสิทธิ์');return;}
+      if(state.busy)return;
+      state.busy=true;$('btnFetchGPS').disabled=true;$('btnFetchGPS').textContent='กำลังค้นหาตำแหน่ง...';
+      gpsStatus('','กำลังรอ GPS จากอุปกรณ์ โปรดกดอนุญาตตำแหน่งเมื่อมีข้อความถาม');
+      const serial=++state.requestSerial;let usingFallback=false;
+      const unlock=()=>{state.busy=false;$('btnFetchGPS').disabled=false;$('btnFetchGPS').innerHTML='<svg class="icon"><use href="#i-pin"/></svg> ดึงพิกัด GPS ปัจจุบัน';};
+      const success=pos=>{
+        if(serial!==state.requestSerial)return;unlock();
+        const {latitude,longitude,accuracy}=pos.coords;
+        $('inputLat').value=latitude.toFixed(6);$('inputLng').value=longitude.toFixed(6);
+        state.source='gps';state.accuracy=accuracy;state.gpsAt=Date.now();
+        $('gpsAccuracy').textContent='GPS จากอุปกรณ์ • ความคลาดเคลื่อนประมาณ ±'+Math.round(accuracy)+' เมตร';
+        renderCanvas();
+        gpsStatus('good','รับพิกัด GPS สำเร็จ กำลังค้นหาที่อยู่ภาษาไทย...');
+        const before=$('inputAddress').value;reverseGeocode(latitude,longitude,serial,before);
+      };
+      const failure=err=>{
+        if(serial!==state.requestSerial)return;
+        if(err.code===3&&!usingFallback){usingFallback=true;gpsStatus('','GPS ความแม่นยำสูงยังไม่ตอบกลับ กำลังลองตำแหน่งเครือข่าย...');navigator.geolocation.getCurrentPosition(success,failure,{enableHighAccuracy:false,timeout:16000,maximumAge:60000});return;}
+        unlock();let msg='ไม่สามารถดึงพิกัด GPS ได้';
+        if(err.code===1)msg='ถูกปฏิเสธสิทธิ์ตำแหน่ง: เปิด Location Services และอนุญาตเว็บไซต์ใน Safari / Chrome';
+        else if(err.code===2)msg='อุปกรณ์หาตำแหน่งไม่ได้ ลองออกนอกอาคาร เปิด GPS และลองใหม่';
+        else if(err.code===3)msg='ค้นหาตำแหน่งเกินเวลา ลองเปิด Wi-Fi/ข้อมูลมือถือแล้วกดใหม่';
+        gpsStatus('bad',msg);toast(msg,5200);
+      };
+      try{navigator.geolocation.getCurrentPosition(success,failure,{enableHighAccuracy:true,timeout:30000,maximumAge:0});}catch(err){unlock();gpsStatus('bad','เบราว์เซอร์ไม่อนุญาตการเข้าถึงตำแหน่งจากหน้านี้');}
+    }
+    function setImage(file){
+      if(!file)return;
+      if(!file.type.startsWith('image/')&&!/\.(heic|heif|jpe?g|png|webp)$/i.test(file.name)){toast('โปรดเลือกไฟล์รูปภาพ');return;}
+      const img=new Image(),url=URL.createObjectURL(file);
+      img.onload=()=>{
+        if(state.objectURL)URL.revokeObjectURL(state.objectURL);
+        state.objectURL=url;state.image=img;
+        $('stampCanvas').hidden=false;$('emptyPreview').hidden=true;
+        $('resolutionBadge').textContent=img.naturalWidth+' × '+img.naturalHeight+' px';
+        $('imageInfo').textContent=(file.name||'รูปภาพ')+' • '+(file.size/1024/1024).toFixed(1)+' MB';
+        renderCanvas();toast('เพิ่มรูปภาพแล้ว สามารถปรับวันเวลาและข้อมูลได้');
+      };
+      img.onerror=()=>{URL.revokeObjectURL(url);toast('เปิดไฟล์ภาพนี้ไม่สำเร็จ ลองใช้รูป JPG หรือ PNG (ภาพ HEIC บางเครื่องอาจไม่รองรับ)',5600)};
+      img.src=url;
+    }
+    function roundedRect(c,x,y,w,h,r){r=Math.min(r,w/2,h/2);c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+    function splitLines(c,text,maxWidth,maxLines=3){
+      const chunks=String(text).split('\n');const lines=[];
+      for(let ch of chunks){
+        const tokens=typeof Intl.Segmenter==='function' ? Array.from(new Intl.Segmenter('th',{granularity:'word'}).segment(ch),p=>p.segment):Array.from(ch);
+        let line='';for(const token of tokens){
+          const trial=line+token;
+          if(c.measureText(trial).width<=maxWidth || !line){line=trial;continue;}
+          lines.push(line.trim());line=token.trimStart();
+          if(c.measureText(line).width>maxWidth){let str='';for(const letter of Array.from(line)){if(c.measureText(str+letter).width>maxWidth&&str){lines.push(str);str=letter;}else str+=letter;}line=str;}
+        }
+        if(line.trim())lines.push(line.trim());
+      }
+      if(lines.length>maxLines){const out=lines.slice(0,maxLines);let end=out[maxLines-1];while(c.measureText(end+'…').width>maxWidth&&end.length>0)end=end.slice(0,-1);out[maxLines-1]=end+'…';return out;}
+      return lines;
+    }
+    function shadowText(c,text,x,y){c.fillText(text,x,y)}
+    function renderCanvas(){
+      const image=state.image;if(!image)return;
+      const srcW=image.naturalWidth,srcH=image.naturalHeight;const factor=Math.min(1,3000/Math.max(srcW,srcH));const W=Math.max(1,Math.round(srcW*factor)),H=Math.max(1,Math.round(srcH*factor));
+      if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H;}
+      ctx.clearRect(0,0,W,H);ctx.drawImage(image,0,0,W,H);
+      const scale=Number($('inputScale').value)/100;
+      const s=Math.max(.25,Math.min(W/1020,H/1220))*scale;
+      const pad=30*s;
+      const centerX=W-pad;
+      const latlng=coordinates();
+      const coordText=latlng.lat&&latlng.lng?[`ละติจูดและลองจิจูด: ${latlng.lat.formatted},`,latlng.lng.formatted]:['ยังไม่มีพิกัด GPS'];
+      const coordFont=30*s;
+      const coordMaxWidth=W*.68;
+      ctx.font=`500 ${coordFont}px -apple-system, Thonburi, Tahoma, sans-serif`;
+      let coordLines=[];for(const line of coordText)coordLines.push(...splitLines(ctx,line,coordMaxWidth-27*s,3));
+      const coordLineHeight=41*s;
+      const boxHeight=coordLines.length*coordLineHeight+18*s;
+      const boxWidth=Math.min(coordMaxWidth+20*s,Math.max(225*s,...coordLines.map(t=>ctx.measureText(t).width+26*s)));
+      const coordY=H-26*s-boxHeight;
+      // Dark gradient under the typography, without altering the top of the photo.
+      const gradient=ctx.createLinearGradient(0,Math.max(0,coordY-355*s),0,H);
+      gradient.addColorStop(0,'rgba(0,0,0,0)');gradient.addColorStop(.28,'rgba(0,0,0,.24)');gradient.addColorStop(1,'rgba(0,0,0,.62)');ctx.fillStyle=gradient;ctx.fillRect(0,Math.max(0,coordY-355*s),W,H);
+      roundedRect(ctx,pad,coordY,boxWidth,boxHeight,7*s);ctx.fillStyle='rgba(75,76,75,.60)';ctx.fill();
+      ctx.save();ctx.font=`500 ${coordFont}px -apple-system, Thonburi, Tahoma, sans-serif`;ctx.fillStyle='#fff';ctx.textBaseline='top';ctx.shadowColor='#0009';ctx.shadowBlur=3*s;
+      coordLines.forEach((line,i)=>shadowText(ctx,line,pad+13*s,coordY+9*s+i*coordLineHeight));ctx.restore();
+      const place=$('inputPlace').value.trim();const address=$('inputAddress').value.trim();const location=[place,address].filter(Boolean).join('  ·  ');
+      const locationFont=34*s;
+      ctx.font=`500 ${locationFont}px -apple-system, Thonburi, Tahoma, sans-serif`;
+      const locLines=splitLines(ctx,location||'ยังไม่ได้ระบุสถานที่',W-pad*2,3);
+      const locHeight=locLines.length*43*s;
+      const locY=coordY-16*s-locHeight;
+      ctx.save();ctx.font=`500 ${locationFont}px -apple-system, Thonburi, Tahoma, sans-serif`;ctx.textBaseline='top';ctx.fillStyle='#fff';ctx.shadowColor='#000c';ctx.shadowBlur=5*s;locLines.forEach((line,i)=>shadowText(ctx,line,pad,locY+i*43*s));ctx.restore();
+      const timeY=locY-145*s;
+      let timeFont=112*s;const timeVal=$('inputTime').value||'--:--';
+      ctx.font=`700 ${timeFont}px "Arial Narrow",Impact,-apple-system, sans-serif`;
+      let timeWidth=ctx.measureText(timeVal).width;
+      const remaining=W-pad*2;
+      if(timeWidth>remaining*.60){timeFont*=remaining*.60/timeWidth;ctx.font=`700 ${timeFont}px "Arial Narrow",Impact,-apple-system,sans-serif`;timeWidth=ctx.measureText(timeVal).width;}
+      const dividerX=pad+timeWidth+18*s;
+      const dateX=dividerX+19*s;
+      ctx.save();ctx.fillStyle='#fff';ctx.shadowColor='#000b';ctx.shadowBlur=7*s;ctx.textBaseline='alphabetic';shadowText(ctx,timeVal,pad,timeY+114*s);ctx.restore();
+      ctx.fillStyle='#ffc05a';ctx.fillRect(dividerX,timeY+12*s,4*s,108*s);
+      const dateStr=($('inputDay').value||'--')+' '+MONTHS[Number($('inputMonth').value)||0];
+      const yearStr=$('inputYearBE').value||'----';
+      let dateFont=35*s;ctx.font=`500 ${dateFont}px -apple-system, Thonburi, Tahoma, sans-serif`;
+      const maxDateW=W-dateX-pad;if(maxDateW>10 && ctx.measureText(dateStr).width>maxDateW){dateFont*=Math.max(.62,maxDateW/ctx.measureText(dateStr).width);}
+      ctx.save();ctx.font=`500 ${dateFont}px -apple-system, Thonburi, Tahoma, sans-serif`;ctx.fillStyle='#fff';ctx.textBaseline='top';ctx.shadowColor='#000c';ctx.shadowBlur=5*s;ctx.fillText(dateStr,dateX,timeY+15*s);ctx.fillText(yearStr,dateX,timeY+80*s);ctx.restore();
+      // Brand lower right, matching the reference composition.
+      ctx.save();ctx.textAlign='right';ctx.textBaseline='alphabetic';ctx.shadowColor='#000c';ctx.shadowBlur=5*s;
+      ctx.font=`700 ${Math.round(37*s)}px -apple-system, Thonburi, Tahoma, sans-serif`;
+      ctx.fillStyle='#ffc05a';ctx.fillText('Timemark',centerX,H-66*s);
+      ctx.font=`400 ${Math.round(20*s)}px -apple-system, Thonburi, Tahoma, sans-serif`;ctx.fillStyle='#e7ebf3';ctx.fillText('ประทับข้อมูลจากผู้ใช้',centerX,H-29*s);ctx.restore();
+      if($('chkShowVerify').checked){ctx.save();ctx.translate(W-12*s,H*.63);ctx.rotate(-Math.PI/2);ctx.font=`500 ${18*s}px -apple-system, Thonburi, Tahoma, sans-serif`;ctx.fillStyle='#f4f6fb';ctx.textBaseline='middle';ctx.shadowColor='#000b';ctx.shadowBlur=4*s;ctx.fillText('ID '+$('inputVerifyCode').value+'  •  Timemark',0,0);ctx.restore();}
+    }
+    function validateBeforeExport(){
+      if(!state.image){toast('กรุณาถ่ายรูปหรือเลือกรูปก่อนบันทึก');return false;}
+      if(!checkDate(true))return false;
+      const co=coordinates();if(co.anyInput&&(!co.lat||!co.lng)){toast('รูปแบบพิกัดไม่ถูกต้อง กรุณาแก้ไขหรือเว้นทั้งสองช่อง');return false;}
+      return true;
+    }
+    const blobFromCanvas=()=>new Promise((resolve,reject)=>{try{canvas.toBlob(b=>b?resolve(b):reject(Error('สร้างรูปภาพไม่สำเร็จ')),'image/jpeg',.94)}catch(e){reject(e)}});
+    async function produceFile(){if(!validateBeforeExport())return null;renderCanvas();try{const blob=await blobFromCanvas();const name='Timemark_'+$('inputYearBE').value+'-'+String(Number($('inputMonth').value)+1).padStart(2,'0')+'-'+String($('inputDay').value).padStart(2,'0')+'_'+$('inputTime').value.replace(':','-')+'.jpg';return new File([blob],name,{type:'image/jpeg'})}catch(e){toast('สร้างภาพไม่สำเร็จ: หน่วยความจำอาจไม่พอ ลองใช้ภาพขนาดเล็กลง');return null}}
+    function openModal(file){if(state.imageBlobURL)URL.revokeObjectURL(state.imageBlobURL);state.imageBlobURL=URL.createObjectURL(file);$('modalResultImage').src=state.imageBlobURL;$('previewModal').hidden=false;}
+    function downloadFile(file){const url=URL.createObjectURL(file);const a=document.createElement('a');a.href=url;a.download=file.name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000)}
+    async function saveImage(){const file=await produceFile();if(!file)return;downloadFile(file);openModal(file);toast('สร้างรูปภาพแล้ว หาก iPhone ไม่ดาวน์โหลด ให้กดค้างรูปหรือกดแชร์');}
+    async function shareImage(){const file=await produceFile();if(!file)return;
+      if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[file]}))){try{await navigator.share({files:[file],title:'Timemark Studio'});return}catch(e){if(e.name==='AbortError')return;}}
+      openModal(file);toast('เบราว์เซอร์นี้แชร์ไฟล์ตรงไม่ได้ ให้กดค้างรูปภาพเพื่อบันทึกหรือแชร์');
+    }
+    function closeModal(){ $('previewModal').hidden=true; }
+    function init(){
+      setNowDateTime();regenerateVerifyCode();
+      if(!secureGeoAllowed())gpsStatus('bad','กำลังเปิดเป็นไฟล์/หน้าพรีวิว: ใช้แต่งภาพได้ แต่ GPS ต้องเปิดผ่าน HTTPS');
+      ['inputTime','inputDay','inputYearBE','inputPlace','inputAddress','inputVerifyCode'].forEach(id=>$(id).addEventListener('input',renderCanvas));
+      $('inputMonth').addEventListener('change',constrainDay);$('inputYearBE').addEventListener('change',constrainDay);$('inputDay').addEventListener('change',constrainDay);
+      ['inputLat','inputLng'].forEach(id=>$(id).addEventListener('input',manualCoordinate));
+      $('inputScale').addEventListener('input',()=>{$('scaleValText').textContent=$('inputScale').value+'%';renderCanvas()});
+      $('chkShowVerify').addEventListener('change',renderCanvas);
+      $('nowBtn').addEventListener('click',()=>{setNowDateTime();toast('เปลี่ยนเป็นวันและเวลาปัจจุบันแล้ว')});
+      $('regenBtn').addEventListener('click',regenerateVerifyCode);
+      $('btnFetchGPS').addEventListener('click',fetchCurrentGPS);
+      $('cameraInput').addEventListener('change',e=>{setImage(e.target.files?.[0]);e.target.value=''});
+      $('galleryInput').addEventListener('change',e=>{setImage(e.target.files?.[0]);e.target.value=''});
+      $('topSave').addEventListener('click',saveImage);$('saveBtn').addEventListener('click',saveImage);$('shareBtn').addEventListener('click',shareImage);
+      $('closeModal').addEventListener('click',closeModal);$('modalDownload').addEventListener('click',()=>{if(state.imageBlobURL){const a=document.createElement('a');a.download='Timemark.jpg';a.href=state.imageBlobURL;document.body.appendChild(a);a.click();a.remove();}});
+      $('modalShare').addEventListener('click',shareImage);$('previewModal').addEventListener('click',e=>{if(e.target===$('previewModal'))closeModal()});
+      window.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+      if(document.fonts?.ready)document.fonts.ready.then(renderCanvas).catch(()=>{});
+    }
+    init();
+  </script>
+</body>
+</html>
