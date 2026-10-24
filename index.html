@@ -212,7 +212,7 @@
       const s=Math.max(.25,Math.min(W/1020,H/1220))*scale;
       const pad=30*s;
       const latlng=coordinates();
-      const coordText=latlng.lat&&latlng.lng?[`ละติจูดและลองจิจูด: ${latlng.lat.formatted},`,latlng.lng.formatted]:['ยังไม่มีพิกัด GPS'];
+      const coordText=latlng.lat&&latlng.lng?[latlng.lat.formatted,latlng.lng.formatted]:['ยังไม่มีพิกัด GPS'];
       const coordFont=30*s;
       const coordMaxWidth=W*.68;
       ctx.font=`500 ${coordFont}px -apple-system, Thonburi, Tahoma, sans-serif`;
